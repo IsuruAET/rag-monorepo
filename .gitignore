@@ -17,8 +17,6 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
-*/env.example
-**/env.example
 
 # Logs
 logs
@@ -41,21 +39,6 @@ coverage/
 
 # nyc test coverage
 .nyc_output
-
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
-
-# Bower dependency directory (https://bower.io/)
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
-# Dependency directories
-jspm_packages/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -94,7 +77,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -142,9 +124,8 @@ vectors/
 *.joblib
 models/
 
-# Large data files
+# Large data files (but keep small config files)
 *.csv
-*.json
 data/
 datasets/
 

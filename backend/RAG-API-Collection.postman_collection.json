@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "RAG API Collection",
+    "description": "Collection for testing RAG (Retrieval-Augmented Generation) API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the server is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Get All Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/documents?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documents"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of documents to return (default: 50)"
+                }
+              ]
+            },
+            "description": "Retrieve all documents from the database"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Single Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This is a sample document about artificial intelligence and machine learning. AI has revolutionized many industries including healthcare, finance, and transportation.\",\n  \"metadata\": {\n    \"title\": \"AI and ML Overview\",\n    \"category\": \"technology\",\n    \"author\": \"John Doe\",\n    \"date\": \"2024-01-15\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documents"]
+            },
+            "description": "Add a single document to the database"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Bulk Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documents\": [\n    {\n      \"content\": \"Machine learning is a subset of artificial intelligence that enables computers to learn and make decisions without being explicitly programmed.\",\n      \"metadata\": {\n        \"title\": \"Machine Learning Basics\",\n        \"category\": \"technology\",\n        \"author\": \"Jane Smith\",\n        \"date\": \"2024-01-16\"\n      }\n    },\n    {\n      \"content\": \"Deep learning uses neural networks with multiple layers to model and understand complex patterns in data. It has been particularly successful in image recognition and natural language processing.\",\n      \"metadata\": {\n        \"title\": \"Deep Learning Fundamentals\",\n        \"category\": \"technology\",\n        \"author\": \"Bob Johnson\",\n        \"date\": \"2024-01-17\"\n      }\n    },\n    {\n      \"content\": \"Natural Language Processing (NLP) is a field of AI that focuses on the interaction between computers and human language. It includes tasks like text classification, sentiment analysis, and machine translation.\",\n      \"metadata\": {\n        \"title\": \"NLP Overview\",\n        \"category\": \"technology\",\n        \"author\": \"Alice Brown\",\n        \"date\": \"2024-01-18\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documents", "bulk"]
+            },
+            "description": "Add multiple documents to the database in a single request"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What is machine learning?\",\n  \"limit\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"]
+            },
+            "description": "Search for documents using semantic similarity"
+          },
+          "response": []
+        },
+        {
+          "name": "Search with Different Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"How does deep learning work?\",\n  \"limit\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"]
+            },
+            "description": "Search with a different query to test semantic search"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat with RAG",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What is the difference between machine learning and deep learning?\",\n  \"history\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat"]
+            },
+            "description": "Chat with the RAG system using document context"
+          },
+          "response": []
+        },
+        {
+          "name": "Chat with History",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Can you tell me more about NLP?\",\n  \"history\": [\n    {\n      \"id\": \"msg1\",\n      \"role\": \"user\",\n      \"content\": \"What is the difference between machine learning and deep learning?\",\n      \"timestamp\": \"2024-01-20T10:00:00Z\"\n    },\n    {\n      \"id\": \"msg2\",\n      \"role\": \"assistant\",\n      \"content\": \"Machine learning is a broader field that includes various algorithms for learning from data, while deep learning specifically uses neural networks with multiple layers to model complex patterns.\",\n      \"timestamp\": \"2024-01-20T10:00:05Z\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat"]
+            },
+            "description": "Chat with conversation history for context"
+          },
+          "response": []
+        },
+        {
+          "name": "Follow-up Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What are some applications of NLP?\",\n  \"history\": [\n    {\n      \"id\": \"msg1\",\n      \"role\": \"user\",\n      \"content\": \"What is the difference between machine learning and deep learning?\",\n      \"timestamp\": \"2024-01-20T10:00:00Z\"\n    },\n    {\n      \"id\": \"msg2\",\n      \"role\": \"assistant\",\n      \"content\": \"Machine learning is a broader field that includes various algorithms for learning from data, while deep learning specifically uses neural networks with multiple layers to model complex patterns.\",\n      \"timestamp\": \"2024-01-20T10:00:05Z\"\n    },\n    {\n      \"id\": \"msg3\",\n      \"role\": \"user\",\n      \"content\": \"Can you tell me more about NLP?\",\n      \"timestamp\": \"2024-01-20T10:10:00Z\"\n    },\n    {\n      \"id\": \"msg4\",\n      \"role\": \"assistant\",\n      \"content\": \"Natural Language Processing (NLP) is a field of AI that focuses on the interaction between computers and human language. It includes tasks like text classification, sentiment analysis, and machine translation.\",\n      \"timestamp\": \"2024-01-20T10:10:05Z\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat"]
+            },
+            "description": "Ask a follow-up question to test conversation continuity"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
