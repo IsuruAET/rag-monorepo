@@ -61,6 +61,31 @@ export class RAGService {
     history: ChatMessage[] = []
   ): Promise<ChatResponse> {
     try {
+      // Check if this is a sales-related query
+      const salesKeywords = [
+        "customer",
+        "purchase",
+        "sales",
+        "buy",
+        "product",
+        "amount",
+        "total",
+        "top",
+        "revenue",
+      ];
+      const isSalesQuery = salesKeywords.some((keyword) =>
+        message.toLowerCase().includes(keyword)
+      );
+
+      if (isSalesQuery) {
+        const salesAnswer = await this.querySalesData(message);
+        return {
+          answer: salesAnswer,
+          sources: [],
+          messageId: Date.now().toString(),
+        };
+      }
+
       // Search for relevant documents
       const searchResults = await this.searchDocuments(message, 3);
 
@@ -95,6 +120,103 @@ export class RAGService {
       console.error("Error in chat:", error);
       throw new Error("Failed to process chat message");
     }
+  }
+
+  async querySalesData(query: string): Promise<string> {
+    try {
+      const db = getDB();
+
+      // Get all sales records
+      const salesRecords = await db.collection("sales").find({}).toArray();
+
+      if (salesRecords.length === 0) {
+        return "No sales data found in the database. Please ensure sales data has been loaded.";
+      }
+
+      // Analyze the query and generate appropriate response
+      if (
+        query.toLowerCase().includes("top") &&
+        query.toLowerCase().includes("customer")
+      ) {
+        return this.getTopCustomersByPurchaseAmount(salesRecords);
+      }
+
+      // Default: return summary of sales data
+      return this.getSalesSummary(salesRecords);
+    } catch (error) {
+      console.error("Error querying sales data:", error);
+      throw new Error("Failed to query sales data");
+    }
+  }
+
+  private getTopCustomersByPurchaseAmount(salesRecords: any[]): string {
+    // Group by customer and calculate total purchase amount
+    const customerTotals = new Map<
+      string,
+      { name: string; total: number; products: Set<string> }
+    >();
+
+    salesRecords.forEach((record) => {
+      const customerId = record.customer.id;
+      const customerName = record.customer.name;
+      const total = record.total;
+
+      if (!customerTotals.has(customerId)) {
+        customerTotals.set(customerId, {
+          name: customerName,
+          total: 0,
+          products: new Set(),
+        });
+      }
+
+      const customer = customerTotals.get(customerId)!;
+      customer.total += total;
+
+      // Add products to the set
+      record.items.forEach((item: any) => {
+        customer.products.add(item.name);
+      });
+    });
+
+    // Sort by total purchase amount and get top 3
+    const topCustomers = Array.from(customerTotals.entries())
+      .map(([id, data]) => ({
+        id,
+        name: data.name,
+        total: data.total,
+        products: Array.from(data.products),
+      }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 3);
+
+    let response = "Top 3 customers by total purchase amount:\n\n";
+
+    topCustomers.forEach((customer, index) => {
+      response += `${index + 1}. ${customer.name}\n`;
+      response += `   Total Purchase Amount: $${customer.total.toFixed(2)}\n`;
+      response += `   Products Purchased: ${customer.products.join(", ")}\n\n`;
+    });
+
+    return response;
+  }
+
+  private getSalesSummary(salesRecords: any[]): string {
+    const totalRevenue = salesRecords.reduce(
+      (sum, record) => sum + record.total,
+      0
+    );
+    const totalOrders = salesRecords.length;
+    const uniqueCustomers = new Set(
+      salesRecords.map((record) => record.customer.id)
+    ).size;
+
+    return (
+      `Sales Summary:\n` +
+      `- Total Revenue: $${totalRevenue.toFixed(2)}\n` +
+      `- Total Orders: ${totalOrders}\n` +
+      `- Unique Customers: ${uniqueCustomers}\n\n` +
+      `Ask me about top customers, specific products, or any other sales data!`
+    );
   }
 
   async addDocument(
